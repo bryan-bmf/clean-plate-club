@@ -1,14 +1,14 @@
 import {
-    Button,
-    ButtonGroup,
-    Card,
-    CardBody,
-    CardFooter,
-    Divider,
-    Heading,
-    Image,
-    Stack,
-    Text,
+	Button,
+	ButtonGroup,
+	Card,
+	CardBody,
+	CardFooter,
+	Divider,
+	Heading,
+	Image,
+	Stack,
+	Text,
 } from "@chakra-ui/react";
 
 const RecipeCard = () => {
