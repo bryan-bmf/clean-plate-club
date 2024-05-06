@@ -1,4 +1,4 @@
-import { SimpleGrid } from "@chakra-ui/react";
+import { Center, SimpleGrid } from "@chakra-ui/react";
 import data from "../data";
 import RecipeCard from "./RecipeCard";
 
@@ -8,7 +8,9 @@ const Recipes = () => {
 	return (
 		<SimpleGrid spacing={4} minChildWidth="200px">
 			{recipes.map((recipe: any) => (
-				<RecipeCard data={recipe} />
+				<Center>
+					<RecipeCard data={recipe} />
+				</Center>
 			))}
 		</SimpleGrid>
 	);
