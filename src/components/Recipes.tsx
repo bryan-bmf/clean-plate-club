@@ -10,10 +10,6 @@ const Recipes = () => {
 			<RecipeCard />
 			<RecipeCard />
 			<RecipeCard />
-			<RecipeCard />
-			<RecipeCard />
-			<RecipeCard />
-			<RecipeCard />
 
 		</SimpleGrid>
 	);
