@@ -2,7 +2,7 @@ import { Center, Heading } from "@chakra-ui/react";
 
 const Header = () => {
     return (
-        <Center>
+        <Center sx={sx.headerParent}>
 			<Heading as="h1" size="4xl" noOfLines={1} sx={sx.header}>
 				Clean Plate Club
 			</Heading>
@@ -17,6 +17,10 @@ const sx = {
         borderBottom: "1px solid black",
         paddingBottom: "10px",
         width: "90%",
-        textAlign: "center"
+        textAlign: "center",
+        spacing: "4"
+    },
+    headerParent: {
+        paddingBottom: "50px"
     }
 }

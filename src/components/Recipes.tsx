@@ -1,17 +1,20 @@
-import {
-	SimpleGrid
-} from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
 import RecipeCard from "./RecipeCard";
 
 const Recipes = () => {
 	return (
 		<SimpleGrid
 			spacing={4}
-			templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
+			minChildWidth='200px'
 		>
 			<RecipeCard />
-            <RecipeCard />
-            <RecipeCard />
+			<RecipeCard />
+			<RecipeCard />
+			<RecipeCard />
+			<RecipeCard />
+			<RecipeCard />
+			<RecipeCard />
+
 		</SimpleGrid>
 	);
 };
