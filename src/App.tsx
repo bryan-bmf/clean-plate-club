@@ -1,6 +1,6 @@
 import './App.css';
-import Header from './Header';
-import Recipes from './Recipes';
+import Header from './components/Header';
+import Recipes from './components/Recipes';
 
 function App() {
   return (
