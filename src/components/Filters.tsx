@@ -1,29 +1,30 @@
-import { Box, HStack } from "@chakra-ui/react";
+import { HStack } from "@chakra-ui/react";
+import { v4 as uuid } from 'uuid';
+import data from "../data";
 
 const Filters = () => {
+	const filterData: any = data.filterData;
+
 	return (
 		<HStack sx={sx.filtersRow} justify="center">
-			<Box sx={sx.filters}>
-				<select>
-					<option value="option1">Cuisine</option>
-					<option value="option2">Option 2</option>
-					<option value="option3">Option 3</option>
-				</select>
-			</Box>
-            <Box sx={sx.filters}>
-				<select>
-					<option value="option1">Protein</option>
-					<option value="option2">Option 2</option>
-					<option value="option3">Option 3</option>
-				</select>
-			</Box>
-            <Box sx={sx.filters}>
-				<select>
-					<option value="option1">Cooking Type</option>
-					<option value="option2">Option 2</option>
-					<option value="option3">Option 3</option>
-				</select>
-			</Box>
+			<select style={sx.filters}>
+				<option value="">Cuisine</option>
+				{filterData.cuisine.map((cuisine: string) => (
+					<option value={cuisine} key={uuid()}>{cuisine}</option>
+				))}
+			</select>
+			<select style={sx.filters}>
+				<option value="">Protein</option>
+				{filterData.protein.map((protein: string) => (
+					<option value={protein} key={uuid()}>{protein}</option>
+				))}
+			</select>
+			<select style={sx.filters}>
+				<option value="">Cooking Type</option>
+				{filterData.cookingType.map((cookingType: string) => (
+					<option value={cookingType} key={uuid()}>{cookingType}</option>
+				))}
+			</select>
 		</HStack>
 	);
 };
@@ -31,10 +32,10 @@ const Filters = () => {
 const sx = {
 	filtersRow: {
 		padding: 4,
-		// w: "500px",
 	},
 	filters: {
-		padding: 2,
+		padding: 7,
+		borderRadius: "5px",
 	},
 };
 
