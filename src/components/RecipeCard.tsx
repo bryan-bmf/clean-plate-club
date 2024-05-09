@@ -10,6 +10,7 @@ import {
 	Stack,
 	Text,
 } from "@chakra-ui/react";
+import { v4 as uuid } from 'uuid';
 
 
 const RecipeCard = (props: any) => {
@@ -25,7 +26,7 @@ const RecipeCard = (props: any) => {
 					<Text>Time: {time}</Text>
 					<Stack direction="row" spacing="3" justify="center">
 						{tags.map((tag: string) => (
-							<Badge colorScheme="orange">{tag}</Badge>
+							<Badge colorScheme="orange" key={uuid()}>{tag}</Badge>
 						))}
 					</Stack>
 				</Stack>
