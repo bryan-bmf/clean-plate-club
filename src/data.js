@@ -22,7 +22,7 @@ const data = [
 	},
 	{
 		title: "Cochinita Pibil",
-		cuisine: "Mexicano",
+		cuisine: "Mexican",
 		time: "3 hours",
 		image: "https://greenhealthycooking.com/wp-content/uploads/2021/04/Cochinita-Pibil-Closeup.jpg",
 		tags: ["Horno", "Cerdo"],
