@@ -1,13 +1,10 @@
 import './App.css';
-import Header from './components/Header';
-import Recipes from './components/Recipes';
+import AddNewRecipe from './pages/AddNewRecipe';
 
 function App() {
   return (
     <div className="App">
-			<Header />
-      {/* <Filters /> */}
-			<Recipes />
+			<AddNewRecipe />
     </div>
   );
 }
