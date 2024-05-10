@@ -5,58 +5,129 @@ import {
     FormLabel,
     HStack,
     Input,
+    Radio,
+    RadioGroup,
     Select,
 } from "@chakra-ui/react";
+import { useState } from "react";
+import { v4 as uuid } from "uuid";
 import data from "../data";
+import { AnyObject } from "../types";
+
 
 const RecipeForm = () => {
+	const [formData, setFormData] = useState<AnyObject>({
+		title: "",
+		cuisine: "",
+		time: "",
+		protein: "",
+		cookingType: "",
+		sourceType: "",
+		source: "",
+		image: "",
+	});
+
+	const handleFormData = (e: any) => {
+		// radio button doesn't bring back an event
+		if (e === "link" || e === "youtube" || e === "book") {
+			setFormData({ ...formData, sourceType: e });
+		} else setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+
 	return (
 		<Container maxW="xl" sx={sx.container}>
 			<FormControl>
 				<FormLabel>Recipe Name</FormLabel>
-				<Input sx={sx.field} type="text" />
+				<Input
+					name="title"
+					sx={sx.field}
+					type="text"
+					value={formData.title}
+					onChange={handleFormData}
+				/>
 
 				<FormLabel>Cuisine</FormLabel>
-				<Select sx={sx.field} placeholder="Select a cuisine">
+				<Select
+					name="cuisine"
+					sx={sx.field}
+					placeholder="Select a cuisine"
+					value={formData.cuisine}
+					onChange={handleFormData}
+				>
 					{data.filterData.cuisine.map((cuisine: string) => (
-						<option value={cuisine}>{cuisine}</option>
+						<option key={uuid()} value={cuisine}>{cuisine}</option>
 					))}
 				</Select>
 
 				<FormLabel>Time to cook</FormLabel>
-				<Input sx={sx.field} type="text" />
+				<Input
+					name="time"
+					sx={sx.field}
+					type="text"
+					value={formData.time}
+					onChange={handleFormData}
+				/>
 
 				<FormLabel>Protein</FormLabel>
-				<Select sx={sx.field} placeholder="Select a protein">
+				<Select
+					name="protein"
+					sx={sx.field}
+					placeholder="Select a protein"
+					value={formData.protein}
+					onChange={handleFormData}
+				>
 					{data.filterData.protein.map((protein: string) => (
-						<option value={protein}>{protein}</option>
+						<option key={uuid()} value={protein}>{protein}</option>
 					))}
 				</Select>
 
 				<FormLabel>Cooking Type</FormLabel>
-				<Select sx={sx.field} placeholder="Select a cooking type">
+				<Select
+					name="cookingType"
+					sx={sx.field}
+					placeholder="Select a cooking type"
+					value={formData.cookingType}
+					onChange={handleFormData}
+				>
 					{data.filterData.cookingType.map((type: string) => (
-						<option value={type}>{type}</option>
+						<option key={uuid()} value={type}>{type}</option>
 					))}
 				</Select>
 
-				<FormLabel>Image</FormLabel>
-				<Input sx={sx.field} type="url" />
+				<FormLabel>Source Type</FormLabel>
+				<RadioGroup
+					name="sourceType"
+					sx={sx.radio}
+					value={formData.sourceType}
+					onChange={handleFormData}
+				>
+					<HStack spacing="12px">
+						<Radio value="link">Link</Radio>
+						<Radio value="youtube">YouTube</Radio>
+						<Radio value="book">Book</Radio>
+					</HStack>
+				</RadioGroup>
+				<Input
+					name="source"
+					sx={sx.field}
+					type="url"
+					value={formData.source}
+					disabled={formData.sourceType.length === 0}
+					onChange={handleFormData}
+				/>
 
-				<FormLabel>Source</FormLabel>
-				<Input sx={sx.field} type="url" />
+				<FormLabel>Image</FormLabel>
+				<Input
+					name="image"
+					sx={sx.field}
+					type="url"
+					value={formData.image}
+					onChange={handleFormData}
+				/>
 
 				<HStack justify="center" sx={sx.buttons}>
-					<Button
-						colorScheme="red"
-					>
-						Cancel
-					</Button>
-					<Button
-						colorScheme="blue"
-					>
-						Submit
-					</Button>
+					<Button colorScheme="red">Cancel</Button>
+					<Button colorScheme="blue">Submit</Button>
 				</HStack>
 			</FormControl>
 		</Container>
@@ -70,9 +141,12 @@ const sx = {
 	container: {
 		padding: 4,
 	},
-    buttons: {
-        mt: 4
-    }
+	buttons: {
+		mt: 4,
+	},
+	radio: {
+		mb: 2,
+	},
 };
 
 export default RecipeForm;
