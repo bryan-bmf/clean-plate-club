@@ -14,7 +14,6 @@ import { v4 as uuid } from "uuid";
 import data from "../data";
 import { AnyObject } from "../types";
 
-
 const RecipeForm = () => {
 	const [formData, setFormData] = useState<AnyObject>({
 		title: "",
@@ -25,6 +24,7 @@ const RecipeForm = () => {
 		sourceType: "",
 		source: "",
 		image: "",
+		pageNumber: 0,
 	});
 
 	const handleFormData = (e: any) => {
@@ -55,7 +55,9 @@ const RecipeForm = () => {
 					onChange={handleFormData}
 				>
 					{data.filterData.cuisine.map((cuisine: string) => (
-						<option key={uuid()} value={cuisine}>{cuisine}</option>
+						<option key={uuid()} value={cuisine}>
+							{cuisine}
+						</option>
 					))}
 				</Select>
 
@@ -77,7 +79,9 @@ const RecipeForm = () => {
 					onChange={handleFormData}
 				>
 					{data.filterData.protein.map((protein: string) => (
-						<option key={uuid()} value={protein}>{protein}</option>
+						<option key={uuid()} value={protein}>
+							{protein}
+						</option>
 					))}
 				</Select>
 
@@ -90,7 +94,9 @@ const RecipeForm = () => {
 					onChange={handleFormData}
 				>
 					{data.filterData.cookingType.map((type: string) => (
-						<option key={uuid()} value={type}>{type}</option>
+						<option key={uuid()} value={type}>
+							{type}
+						</option>
 					))}
 				</Select>
 
@@ -107,6 +113,13 @@ const RecipeForm = () => {
 						<Radio value="book">Book</Radio>
 					</HStack>
 				</RadioGroup>
+                {/* Only show label for YT and book types */}
+				{formData.sourceType !== "link" &&
+				formData.sourceType.length > 0 ? (
+					<FormLabel>
+						{formData.sourceType === "youtube" ? "Youtube Link" : "Title"}
+					</FormLabel>
+				) : null}
 				<Input
 					name="source"
 					sx={sx.field}
@@ -115,15 +128,34 @@ const RecipeForm = () => {
 					disabled={formData.sourceType.length === 0}
 					onChange={handleFormData}
 				/>
+				{/* Only show if it's a book */}
+				{formData.sourceType === "book" && (
+					<>
+						<FormLabel>Page Number</FormLabel>
+						<Input
+							name="pageNumber"
+							sx={sx.field}
+							type="number"
+							value={formData.pageNumber}
+							onChange={handleFormData}
+							w="100px"
+						/>
+					</>
+				)}
 
-				<FormLabel>Image</FormLabel>
-				<Input
-					name="image"
-					sx={sx.field}
-					type="url"
-					value={formData.image}
-					onChange={handleFormData}
-				/>
+				{/* Only show if it's a link. An API call will populate the others */}
+				{formData.sourceType === "link" && (
+					<>
+						<FormLabel>Image</FormLabel>
+						<Input
+							name="image"
+							sx={sx.field}
+							type="url"
+							value={formData.image}
+							onChange={handleFormData}
+						/>
+					</>
+				)}
 
 				<HStack justify="center" sx={sx.buttons}>
 					<Button colorScheme="red">Cancel</Button>
