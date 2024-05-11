@@ -34,6 +34,17 @@ const RecipeForm = () => {
 		} else setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
+	const fetchBook = async (data: AnyObject) => {
+		console.log("wepa");
+		const url = "https://www.googleapis.com/books/v1/volumes?";
+		const resp = await fetch(
+			url + "key=" + process.env.REACT_APP_GOOGLE_API_KEY + "&q=" + formData.source
+		);
+		console.log(resp);
+		const respData = await resp.json();
+		console.log(respData);
+	};
+
 	return (
 		<Container maxW="xl" sx={sx.container}>
 			<FormControl>
@@ -113,7 +124,7 @@ const RecipeForm = () => {
 						<Radio value="book">Book</Radio>
 					</HStack>
 				</RadioGroup>
-                {/* Only show label for YT and book types */}
+				{/* Only show label for YT and book types */}
 				{formData.sourceType !== "link" &&
 				formData.sourceType.length > 0 ? (
 					<FormLabel>
@@ -159,7 +170,9 @@ const RecipeForm = () => {
 
 				<HStack justify="center" sx={sx.buttons}>
 					<Button colorScheme="red">Cancel</Button>
-					<Button colorScheme="blue">Submit</Button>
+					<Button colorScheme="blue" onClick={fetchBook}>
+						Submit
+					</Button>
 				</HStack>
 			</FormControl>
 		</Container>
@@ -182,21 +195,3 @@ const sx = {
 };
 
 export default RecipeForm;
-
-/*
-
-recipe name
-
-cuisine
-
-time
-
-protein
-
-cooking type
-
-image (link)
-
-source (link, youtube, libro)
-
-*/
