@@ -26,6 +26,11 @@ const RecipeForm = () => {
 		image: "",
 		pageNumber: 0,
 	});
+	const [book, setBook] = useState<AnyObject>({
+		bookTitle: "",
+		bookImage: "",
+		bookAuthor: "",
+	});
 
 	const handleFormData = (e: any) => {
 		// radio button doesn't bring back an event
@@ -34,15 +39,22 @@ const RecipeForm = () => {
 		} else setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const fetchBook = async (data: AnyObject) => {
-		console.log("wepa");
-		const url = "https://www.googleapis.com/books/v1/volumes?";
+	const fetchBook = async () => {
+		const url = "https://www.googleapis.com/books/v1/volumes";
 		const resp = await fetch(
-			url + "key=" + process.env.REACT_APP_GOOGLE_API_KEY + "&q=" + formData.source
+			url +
+				"?key=" +
+				process.env.REACT_APP_GOOGLE_API_KEY +
+				"&q=" +
+				formData.source
 		);
-		console.log(resp);
 		const respData = await resp.json();
-		console.log(respData);
+		const bookInfo = respData.items[0].volumeInfo;
+		setBook({
+			bookTitle: bookInfo.title,
+			bookImage: bookInfo.imageLinks.thumbnail,
+			bookAuthor: bookInfo.authors[0],
+		});
 	};
 
 	return (
