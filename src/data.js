@@ -5,7 +5,10 @@ const data = [
 		time: "1 hour",
 		image: "https://www.elsabor.com.ec/wp-content/uploads/2022/02/arroz-pollo-700x525.jpg",
 		tags: ["Pollo", "Stovetop"],
-        type: "book"
+        type: "book",
+        author: "Babby",
+        pageNumber: 25,
+        bookTitle: "Basics with Babish"
 	},
 	{
 		title: "Shrimp Scampi",
@@ -14,7 +17,7 @@ const data = [
 		image: "https://static01.nyt.com/images/2022/06/02/dining/ShrimpScampi_thumb/ShrimpScampi_thumb-square640.jpg",
 		tags: ["Shrimp", "Stovetop"],
         type: "link",
-        link: "https://cooking.nytimes.com/recipes/9101-classic-shrimp-scampi"
+        source: "https://cooking.nytimes.com/recipes/9101-classic-shrimp-scampi"
 	},
 	{
 		title: "Kimchi Fried Rice",
@@ -23,6 +26,7 @@ const data = [
 		image: "https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_1:1/k%2FPhoto%2FRecipes%2F2023-12-kimchi-fried-rice%2Fkimchi-fried-rice-197",
 		tags: ["Veggie", "Stir-fry"],
         type: "youtube",
+        source: "https://www.youtube.com/embed/tgbNymZ7vqY"
 	},
 	{
 		title: "Cochinita Pibil",
