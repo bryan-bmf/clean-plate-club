@@ -6,9 +6,10 @@ const data = [
 		image: "https://www.elsabor.com.ec/wp-content/uploads/2022/02/arroz-pollo-700x525.jpg",
 		tags: ["Pollo", "Stovetop"],
         type: "book",
-        author: "Babby",
+        bookAuthor: "Babby",
         pageNumber: 25,
-        bookTitle: "Basics with Babish"
+        bookTitle: "Basics with Babish",
+        bookImage: "https://books.google.com/books/content?id=P4gzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
 	},
 	{
 		title: "Shrimp Scampi",

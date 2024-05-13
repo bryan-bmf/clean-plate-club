@@ -32,9 +32,10 @@ const RecipeCard = (props: any) => {
 		tags,
 		type,
 		source,
-		author,
+		bookAuthor,
 		pageNumber,
 		bookTitle,
+		bookImage
 	} = props.data;
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -59,11 +60,11 @@ const RecipeCard = (props: any) => {
 			<ModalHeader></ModalHeader>
 			<ModalBody>
 				<Flex>
-					<Image src="https://books.google.com/books/content?id=P4gzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api" />
+					<Image src={bookImage} />
 					<Spacer />
 					<Box ml="5px">
 						<Heading>{bookTitle}</Heading>
-						<Text fontSize="xl">{author}</Text>
+						<Text fontSize="xl">{bookAuthor}</Text>
 						<Text fontSize="md">Page {pageNumber}</Text>
 					</Box>
 				</Flex>
