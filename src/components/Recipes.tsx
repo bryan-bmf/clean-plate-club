@@ -47,7 +47,7 @@ const Recipes = () => {
 	}, [cuisine, protein, cookingType]);
 
 	return (
-		<Container maxW="5xl">
+		<Container sx={sx.container}>
 			{/* FILTERS */}
 			<HStack sx={sx.filtersRow} justify="center">
 				<select
@@ -127,6 +127,10 @@ const sx = {
 	},
 	clearFilters: {
 		mt: "20px",
+	},
+	container: {
+		maxW: "5xl",
+		textAlign: "center"
 	}
 };
 
