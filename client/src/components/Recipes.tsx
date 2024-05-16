@@ -42,7 +42,14 @@ const Recipes = () => {
 		setCookingType("");
 	}
 
+	const fetchData = async () => {
+		const resp = await fetch("http://127.0.0.1:5000");
+		console.log(await resp.text())
+
+	};
+
 	useEffect(() => {
+		fetchData()
 		handleRecipeFilter();
 	}, [cuisine, protein, cookingType]);
 
