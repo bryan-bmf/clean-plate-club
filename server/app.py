@@ -2,7 +2,7 @@
 from os import environ
 
 import psycopg2
-from flask import Flask, request
+from flask import Flask, Response
 from flask_cors import CORS
 
 # instance of flask application
@@ -27,6 +27,7 @@ def db_connect():
 
 @app.route("/", methods=['POST'])
 def test_insert():
+    res = 'ok'
     try:
         conn = db_connect()
         cur = conn.cursor()
@@ -45,12 +46,20 @@ def test_insert():
         print('Stored Procedure called')
     
     except (Exception, psycopg2.DatabaseError) as error: 
+        res = error
         print("Error on calling stored procedure", error) 
     finally:
         cur.close()
         conn.close()
-        print("PostgreSQL connection is closed") 
-        return 'ok'
+        print("PostgreSQL connection is closed")
+        
+        # send error code when there's an exception
+        if(res != 'ok'):
+            response = Response()
+            response.status_code = 503
+            return response
+            
+        return res
 
 # get all
 @app.route("/get_recipes")
