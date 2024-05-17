@@ -38,3 +38,6 @@ nosetests.xml
 .venv
 app.db
 .instructions
+insert_stored_procedure.sql
+/.env
+/.flaskenv
