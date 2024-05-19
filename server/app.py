@@ -2,7 +2,7 @@
 from os import environ
 
 import psycopg2
-from flask import Flask, Response
+from flask import Flask, Response, request
 from flask_cors import CORS
 
 # instance of flask application
@@ -25,8 +25,9 @@ def db_connect():
                             password=PG_PASSWORD)
     return conn
 
-@app.route("/", methods=['POST'])
-def test_insert():
+# create a new recipe
+@app.route("/create", methods=['POST'])
+def create_recipe():
     res = 'ok'
     try:
         conn = db_connect()
@@ -64,9 +65,29 @@ def test_insert():
 # get all
 @app.route("/get_recipes")
 def get_recipes():
+    print('get recipes')
+    query = """ 
+            select jsonb_agg(t)
+	        from (
+                select id, name, cuisine, time, protein, cooking_type, media, image, null as title, null as author, null as cover_image, null as page
+                from clean_plate_club.recipes t1
+                join clean_plate_club.media t2
+                on t1.id = t2.recipe_id
+                and t2.recipe_id is not null
+
+
+                union
+
+                select id, name, cuisine, time, protein, cooking_type, null as media, null as image, title, author, cover_image, page
+                        from clean_plate_club.recipes t1
+                        join clean_plate_club.books t2
+                        on t1.id = t2.recipe_id
+                        and t2.recipe_id is not null
+                ) t
+                        """
     conn = db_connect()
     cur = conn.cursor()
-    cur.execute('select * from clean_plate_club.recipes')
+    cur.execute(query)
     recipes = cur.fetchall()
     print(recipes)
     cur.close()
@@ -74,17 +95,41 @@ def get_recipes():
     return recipes
 
 # get recipe to edit
-@app.route("/get_recipe")
-def get_recipe():
-	return "Hello, World!"
+@app.route("/edit")
+def edit_recipe():
+    print('edit recipe')
+    print(request.args.get('id'))
+    query = """ 
+            select jsonb_agg(t)
+	        from (
+                select id, name, cuisine, time, protein, cooking_type, media, image, null as title, null as author, null as cover_image, null as page
+                from clean_plate_club.recipes t1
+                join clean_plate_club.media t2
+                on t1.id = t2.recipe_id
+                and t2.recipe_id is not null
+                where id = 'ec0ee629-8fd0-43ef-9a96-1180afd6a4a6'
 
-# create recipe
-@app.route("/create", methods=['POST'])
-def create_recipe():
-	return "Hello, World!"
+                union
+
+                select id, name, cuisine, time, protein, cooking_type, null as media, null as image, title, author, cover_image, page
+                        from clean_plate_club.recipes t1
+                        join clean_plate_club.books t2
+                        on t1.id = t2.recipe_id
+                        and t2.recipe_id is not null
+                        where id = 'ec0ee629-8fd0-43ef-9a96-1180afd6a4a6'
+                ) t
+                        """
+    conn = db_connect()
+    cur = conn.cursor()
+    cur.execute(query)
+    recipes = cur.fetchall()
+    print(recipes)
+    cur.close()
+    conn.close()
+    return recipes
 
 # update recipe
-@app.route("/create", methods=['POST'])
+@app.route("/update", methods=['POST'])
 def update_recipe():
 	return "Hello, World!"
 
