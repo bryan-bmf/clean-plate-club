@@ -29,6 +29,7 @@ def db_connect():
 # create a new recipe
 @app.route("/create", methods=['POST'])
 def create_recipe():
+    print('create new recipe')
     res = 'ok'
     req_data = request.get_json()
     try:
@@ -62,6 +63,7 @@ def create_recipe():
             response.status_code = 503
             return response
             
+        res = 'Recipe created'
         return res
 
 # get all
@@ -163,9 +165,44 @@ def edit_recipe():
         return res
 
 # update recipe
-@app.route("/update", methods=['POST'])
+@app.route("/update", methods=['PUT'])
 def update_recipe():
-	return "Hello, World!"
+    print('update recipe')
+    res = 'ok'
+    req_data = request.get_json()
+    try:
+        conn = db_connect()
+        cur = conn.cursor()
+        print("Connected to PostgresDB")
+        
+        cur.execute("CALL clean_plate_club.recipe_update(%s, %s, %s, %s, %s, %s, %s);", (
+            req_data['id'],
+            req_data['name'],
+            req_data['cuisine'],
+            req_data['time'],
+            req_data['protein'],
+            req_data['cooking_type'],
+            Json(req_data['source'])    
+        )) 
+        conn.commit()
+        print('Stored Procedure called')
+    
+    except (Exception, psycopg2.DatabaseError) as error: 
+        res = error
+        print("Error on calling stored procedure", error) 
+    finally:
+        cur.close()
+        conn.close()
+        print("PostgreSQL connection is closed")
+        
+        # send error code when there's an exception
+        if(res != 'ok'):
+            response = Response()
+            response.status_code = 503
+            return response
+            
+        res = 'Update successful'
+        return res
 
 if __name__ == '__main__': 
     app.run(debug=True)
