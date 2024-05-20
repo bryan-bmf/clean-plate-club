@@ -4,6 +4,7 @@ from os import environ
 import psycopg2
 from flask import Flask, Response, request
 from flask_cors import CORS
+from psycopg2.extras import Json
 
 # instance of flask application
 app = Flask(__name__)
@@ -29,19 +30,20 @@ def db_connect():
 @app.route("/create", methods=['POST'])
 def create_recipe():
     res = 'ok'
+    req_data = request.get_json()
     try:
         conn = db_connect()
         cur = conn.cursor()
         print("Connected to PostgresDB")
         
         cur.execute("CALL clean_plate_club.recipe_insert(%s, %s, %s, %s, %s, %s, %s);", (
-            'ec0ee629-8fd0-43ef-9a96-1180afd6a4a6',
-            'arroz con pollo',
-            'criollo',
-            '1 hr',
-            'pollo',
-            'stovetop',
-            '{"link": "www.wepa.com", "image": "www.image.com"}'
+            req_data['id'],
+            req_data['name'],
+            req_data['cuisine'],
+            req_data['time'],
+            req_data['protein'],
+            req_data['cooking_type'],
+            Json(req_data['source'])    
         )) 
         conn.commit()
         print('Stored Procedure called')
@@ -85,20 +87,36 @@ def get_recipes():
                         and t2.recipe_id is not null
                 ) t
                         """
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute(query)
-    recipes = cur.fetchall()
-    print(recipes)
-    cur.close()
-    conn.close()
-    return recipes
+    try:
+        conn = db_connect()
+        cur = conn.cursor()
+        cur.execute(query)
+        recipes = cur.fetchall()
+        print(recipes)
+        res = recipes
+        
+    except (Exception, psycopg2.DatabaseError) as error: 
+        res = 'error'
+        print(error) 
+        
+    finally:
+        cur.close()
+        conn.close()
+        print("PostgreSQL connection is closed")
+        
+        # send error code when there's an exception
+        if(res == 'error'):
+            response = Response()
+            response.status_code = 503
+            return response
+            
+        return res
 
 # get recipe to edit
 @app.route("/edit")
 def edit_recipe():
     print('edit recipe')
-    print(request.args.get('id'))
+    id = request.args.get('id')
     query = """ 
             select jsonb_agg(t)
 	        from (
@@ -107,26 +125,42 @@ def edit_recipe():
                 join clean_plate_club.media t2
                 on t1.id = t2.recipe_id
                 and t2.recipe_id is not null
-                where id = 'ec0ee629-8fd0-43ef-9a96-1180afd6a4a6'
+                where id = '""" + id + """'
 
                 union
 
                 select id, name, cuisine, time, protein, cooking_type, null as media, null as image, title, author, cover_image, page
-                        from clean_plate_club.recipes t1
-                        join clean_plate_club.books t2
-                        on t1.id = t2.recipe_id
-                        and t2.recipe_id is not null
-                        where id = 'ec0ee629-8fd0-43ef-9a96-1180afd6a4a6'
+                from clean_plate_club.recipes t1
+                join clean_plate_club.books t2
+                on t1.id = t2.recipe_id
+                and t2.recipe_id is not null
+                where id = '""" + id + """'
                 ) t
-                        """
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute(query)
-    recipes = cur.fetchall()
-    print(recipes)
-    cur.close()
-    conn.close()
-    return recipes
+            """
+    try:
+        conn = db_connect()
+        cur = conn.cursor()
+        cur.execute(query)
+        recipes = cur.fetchall()
+        print(recipes)
+        res = recipes
+        
+    except (Exception, psycopg2.DatabaseError) as error: 
+        res = 'error'
+        print(error) 
+        
+    finally:
+        cur.close()
+        conn.close()
+        print("PostgreSQL connection is closed")
+        
+        # send error code when there's an exception
+        if(res == 'error'):
+            response = Response()
+            response.status_code = 503
+            return response
+            
+        return res
 
 # update recipe
 @app.route("/update", methods=['POST'])
