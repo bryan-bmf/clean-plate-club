@@ -22,7 +22,6 @@ def get_recipes():
     print('get recipes')
     res = get_edit_recipe('all')
     return res
-    
 
 # get recipe to edit
 @app.route("/edit")
@@ -32,7 +31,6 @@ def edit_recipe():
     res = get_edit_recipe(id)
     return res
 
-
 # update recipe
 @app.route("/update", methods=['PUT'])
 def update_recipe():
@@ -40,7 +38,6 @@ def update_recipe():
     req_data = request.get_json()
     res = create_update_recipe(req_data, 'update')
     return res
-
 
 if __name__ == '__main__': 
     app.run(debug=True)

@@ -9,7 +9,6 @@ PG_PASSWORD=environ.get('PG_PASSWORD')
 PG_DB=environ.get('PG_DB')
 PG_HOST=environ.get('PG_HOST')
 
-
 # db config
 def db_connect():
     conn = psycopg2.connect(host=PG_HOST,
@@ -18,6 +17,7 @@ def db_connect():
                             password=PG_PASSWORD)
     return conn
 
+# create or update recipe
 def create_update_recipe(req_data, type):
     print(type + ' recipe')
     res = 'ok'
@@ -55,6 +55,7 @@ def create_update_recipe(req_data, type):
         res = 'Recipe ' + type + "d"
         return res
     
+# get all recipes or a single recipe to edit
 def get_edit_recipe(id):
     print('get/edit recipe')
     
