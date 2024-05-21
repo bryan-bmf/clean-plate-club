@@ -15,21 +15,19 @@ import RecipeCard from "./RecipeCard";
 const Recipes = () => {
 	const filterData: any = data.filterData;
 
-	const [recipes, setRecipes] = useState<Array<any>>(data.data);
-	const [filteredRecipes, setFilteredRecipes] = useState<Array<any>>(
-		data.data
-	);
+	const [recipes, setRecipes] = useState<Array<any>>();
+	const [filteredRecipes, setFilteredRecipes] = useState<Array<any>>();
 	const [cuisine, setCuisine] = useState("");
 	const [protein, setProtein] = useState("");
 	const [cookingType, setCookingType] = useState("");
 
 	const handleRecipeFilter = () => {
 		//perform all filters at the same time
-		let temp = recipes.filter((recipe) => {
+		let temp = recipes && recipes.filter((recipe) => {
 			return (
 				(!cuisine || cuisine === recipe.cuisine) &&
-				(!protein || protein === recipe.tags[0]) &&
-				(!cookingType || cookingType === recipe.tags[1])
+				(!protein || protein === recipe.protein) &&
+				(!cookingType || cookingType === recipe.cooking_type)
 			);
 		});
 
@@ -40,18 +38,23 @@ const Recipes = () => {
 		setCuisine("");
 		setProtein("");
 		setCookingType("");
-	}
+	};
 
 	const fetchData = async () => {
-		const resp = await fetch("http://127.0.0.1:5000");
-		console.log(await resp.text())
-
+		const resp = await fetch("http://127.0.0.1:5000/get_recipes");
+		const respData = await resp.json();
+		console.log(respData[0][0]);
+		setRecipes(respData[0][0]);
+		setFilteredRecipes(respData[0][0]);
 	};
 
 	useEffect(() => {
-		fetchData()
 		handleRecipeFilter();
 	}, [cuisine, protein, cookingType]);
+
+	useEffect(() => {
+		fetchData();
+	}, []);
 
 	return (
 		<Container sx={sx.container}>
@@ -105,7 +108,7 @@ const Recipes = () => {
 			</HStack>
 			{/* RECIPES */}
 			<SimpleGrid spacing={4} minChildWidth="200px">
-				{filteredRecipes.length > 0 ? (
+				{filteredRecipes && filteredRecipes.length > 0 ? (
 					filteredRecipes.map((recipe: any) => (
 						<Center key={uuid()}>
 							<RecipeCard data={recipe} />
@@ -116,7 +119,13 @@ const Recipes = () => {
 						<Heading>
 							No recipes match this criteria. Try again!!!
 						</Heading>
-						<Button sx={sx.clearFilters} colorScheme="blue" onClick={handleClearFilters}>Clear filters</Button>
+						<Button
+							sx={sx.clearFilters}
+							colorScheme="blue"
+							onClick={handleClearFilters}
+						>
+							Clear filters
+						</Button>
 					</Box>
 				)}
 			</SimpleGrid>
@@ -137,8 +146,8 @@ const sx = {
 	},
 	container: {
 		maxW: "5xl",
-		textAlign: "center"
-	}
+		textAlign: "center",
+	},
 };
 
 export default Recipes;

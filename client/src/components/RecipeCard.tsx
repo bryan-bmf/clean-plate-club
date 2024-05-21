@@ -25,23 +25,23 @@ import { v4 as uuid } from "uuid";
 
 const RecipeCard = (props: any) => {
 	const {
-		title,
+		name,
 		image,
 		cuisine,
 		time,
-		tags,
-		type,
-		source,
-		bookAuthor,
-		pageNumber,
-		bookTitle,
-		bookImage
+		protein,
+		cooking_type,
+		author,
+		page,
+		title,
+		cover_image,
+		media
 	} = props.data;
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	// Button for links
 	const typeLink = (
-		<Link href={source} isExternal>
+		<Link href={media} isExternal>
 			<Button variant="solid" colorScheme="blue">
 				View recipe
 			</Button>
@@ -60,12 +60,12 @@ const RecipeCard = (props: any) => {
 			<ModalHeader></ModalHeader>
 			<ModalBody>
 				<Flex>
-					<Image src={bookImage} />
+					<Image src={cover_image} />
 					<Spacer />
 					<Box ml="5px">
-						<Heading>{bookTitle}</Heading>
-						<Text fontSize="xl">{bookAuthor}</Text>
-						<Text fontSize="md">Page {pageNumber}</Text>
+						<Heading>{title}</Heading>
+						<Text fontSize="xl">{author}</Text>
+						<Text fontSize="md">Page {page}</Text>
 					</Box>
 				</Flex>
 			</ModalBody>
@@ -79,11 +79,7 @@ const RecipeCard = (props: any) => {
 
 	const videoModal = (
 		<Box ml="-175px">
-			<iframe
-				width="854"
-				height="480"
-				src={source}
-			></iframe>
+			<iframe width="854" height="480" src={media}></iframe>
 		</Box>
 	);
 
@@ -94,28 +90,29 @@ const RecipeCard = (props: any) => {
 				<CardBody>
 					<Image src={image} borderRadius="lg" boxSize="200px" />
 					<Stack mt="6" spacing="3">
-						<Heading size="md">{title}</Heading>
+						<Heading size="md">{name}</Heading>
 						<Text>Cuisine: {cuisine}</Text>
 						<Text>Time: {time}</Text>
 						<Stack direction="row" spacing="3" justify="center">
-							{tags.map((tag: string) => (
-								<Badge colorScheme="orange" key={uuid()}>
-									{tag}
-								</Badge>
-							))}
+							<Badge colorScheme="orange" key={uuid()}>
+								{protein}
+							</Badge>
+							<Badge colorScheme="orange" key={uuid()}>
+								{cooking_type}
+							</Badge>
 						</Stack>
 					</Stack>
 				</CardBody>
 				<Divider />
 				<CardFooter justify="center">
-					{type === "link" ? typeLink : typeOther}
+					{image !== null ? typeLink : typeOther}
 				</CardFooter>
 			</Card>
 			{/* MODAL */}
 			<Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
 				<ModalOverlay backdropFilter="auto" backdropBlur="2px" />
 				<ModalContent>
-					{type === "book" ? bookModal : videoModal}
+					{author !== null ? bookModal : videoModal}
 				</ModalContent>
 			</Modal>
 		</>
