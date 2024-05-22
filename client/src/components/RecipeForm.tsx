@@ -35,51 +35,34 @@ const RecipeForm = () => {
 		} else setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const fetchBook = async () => {
-		const url = "https://www.googleapis.com/books/v1/volumes";
-		const resp = await fetch(
-			url +
-				"?key=" +
-				process.env.REACT_APP_GOOGLE_API_KEY +
-				"&q=" +
-				formData.source
-		);
-		const respData = await resp.json();
-		const bookInfo = respData.items[0].volumeInfo;
-		return {
-			title: bookInfo.title,
-			cover_image: bookInfo.imageLinks.thumbnail,
-			author: bookInfo.authors[0],
-		};
-	};
-
 	const createRecipe = async (recipe: AnyObject) => {
 		const resp = await fetch("http://127.0.0.1:5000/create", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(recipe)
+			body: JSON.stringify(recipe),
 		});
 
-		console.log(resp)
+		console.log(resp);
+		if(resp.ok)
+			alert("SUCCESS")
+		else
+			alert("ERROR")
 	};
 
-	const handleSubmit = async () => {
-		const recipe = await formatForm();
+	const handleSubmit = () => {
+		const recipe = formatForm();
 		createRecipe(recipe);
 	};
 
 	// format form data for backend
-	const formatForm = async () => {
+	const formatForm = () => {
 		let temp = { ...formData };
 
-		if (formData.source_type === "book") {
-			const book = await fetchBook();
-			temp.source = { ...book, page: temp.page };
-		} else if (formData.source_type === "link")
+		if (formData.source_type === "link")
 			temp.source = { link: temp.source, image: temp.image };
-		else {
+		else if (formData.source_type === "youtube") {
 			let ytId = temp.source.split("=")[1];
 			temp.source = {
 				link: temp.source,
@@ -87,8 +70,6 @@ const RecipeForm = () => {
 			};
 		}
 
-		delete temp.source_type;
-		delete temp.page;
 		delete temp.image;
 
 		return { ...temp, id: uuid() };
