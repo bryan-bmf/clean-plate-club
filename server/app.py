@@ -13,6 +13,7 @@ CORS(app)
 def create_recipe():
     print('create new recipe')
     req_data = request.get_json()
+    print(req_data)
     res = create_update_recipe(req_data, 'insert')
     return res
 

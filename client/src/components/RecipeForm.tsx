@@ -23,14 +23,10 @@ const RecipeForm = () => {
 		cooking_type: "",
 		source_type: "",
 		page: 0,
-		media: "",
-		link: "",
+		image: "",
+		source: "",
 	});
-	const [book, setBook] = useState<AnyObject>({
-		title: "",
-		cover_image: "",
-		author: "",
-	});
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const handleFormData = (e: any) => {
 		// radio button doesn't bring back an event
@@ -46,20 +42,56 @@ const RecipeForm = () => {
 				"?key=" +
 				process.env.REACT_APP_GOOGLE_API_KEY +
 				"&q=" +
-				formData.link
+				formData.source
 		);
 		const respData = await resp.json();
 		const bookInfo = respData.items[0].volumeInfo;
-		setBook({
+		return {
 			title: bookInfo.title,
 			cover_image: bookInfo.imageLinks.thumbnail,
 			author: bookInfo.authors[0],
-		});
+		};
 	};
 
-	const handleSubmit = () => {
-		// fetchBook();
-		console.log(formData);
+	const createRecipe = async (recipe: AnyObject) => {
+		const resp = await fetch("http://127.0.0.1:5000/create", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(recipe)
+		});
+
+		console.log(resp)
+	};
+
+	const handleSubmit = async () => {
+		const recipe = await formatForm();
+		createRecipe(recipe);
+	};
+
+	// format form data for backend
+	const formatForm = async () => {
+		let temp = { ...formData };
+
+		if (formData.source_type === "book") {
+			const book = await fetchBook();
+			temp.source = { ...book, page: temp.page };
+		} else if (formData.source_type === "link")
+			temp.source = { link: temp.source, image: temp.image };
+		else {
+			let ytId = temp.source.split("=")[1];
+			temp.source = {
+				link: temp.source,
+				image: "https://i3.ytimg.com/vi/" + ytId + "/0.jpg",
+			};
+		}
+
+		delete temp.source_type;
+		delete temp.page;
+		delete temp.image;
+
+		return { ...temp, id: uuid() };
 	};
 
 	return (
@@ -146,10 +178,9 @@ const RecipeForm = () => {
 					</FormLabel>
 				) : null}
 				<Input
-					name="link"
-					
+					name="source"
 					type="url"
-					value={formData.link}
+					value={formData.source}
 					disabled={formData.source_type.length === 0}
 					onChange={handleFormData}
 				/>
@@ -159,7 +190,6 @@ const RecipeForm = () => {
 						<FormLabel sx={sx.label}>Page Number</FormLabel>
 						<Input
 							name="page"
-							
 							type="number"
 							value={formData.page}
 							onChange={handleFormData}
@@ -173,9 +203,9 @@ const RecipeForm = () => {
 					<>
 						<FormLabel sx={sx.label}>Image</FormLabel>
 						<Input
-							name="media"
+							name="image"
 							type="url"
-							value={formData.media}
+							value={formData.image}
 							onChange={handleFormData}
 						/>
 					</>
