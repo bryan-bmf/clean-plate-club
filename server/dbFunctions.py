@@ -86,7 +86,7 @@ def get_edit_recipe(id):
         query = """ 
                 select jsonb_agg(t)
                 from (
-                    select id, name, cuisine, time, protein, cooking_type, media, image, null as title, null as author, null as cover_image, null as page
+                    select id, name, cuisine, time, protein, cooking_type, link, image, null as title, null as author, null as cover_image, null as page
                     from clean_plate_club.recipes t1
                     join clean_plate_club.media t2
                     on t1.id = t2.recipe_id
@@ -95,7 +95,7 @@ def get_edit_recipe(id):
 
                     union
 
-                    select id, name, cuisine, time, protein, cooking_type, null as media, null as image, title, author, cover_image, page
+                    select id, name, cuisine, time, protein, cooking_type, null as link, null as image, title, author, cover_image, page
                     from clean_plate_club.recipes t1
                     join clean_plate_club.books t2
                     on t1.id = t2.recipe_id
@@ -109,7 +109,6 @@ def get_edit_recipe(id):
         cur.execute(query)
         recipes = cur.fetchall()
         print(recipes)
-        res = recipes
         
     except (Exception, psycopg2.DatabaseError) as error: 
         res = error
@@ -128,7 +127,7 @@ def get_edit_recipe(id):
             )
             return response
             
-        return res
+        return recipes
     
 def getGoogleBook(q):
     print('get book')

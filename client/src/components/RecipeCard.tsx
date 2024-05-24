@@ -35,13 +35,13 @@ const RecipeCard = (props: any) => {
 		page,
 		title,
 		cover_image,
-		media
+		link
 	} = props.data;
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	// Button for links
 	const typeLink = (
-		<Link href={media} isExternal>
+		<Link href={link} isExternal>
 			<Button variant="solid" colorScheme="blue">
 				View recipe
 			</Button>
@@ -79,7 +79,7 @@ const RecipeCard = (props: any) => {
 
 	const videoModal = (
 		<Box ml="-175px">
-			<iframe width="854" height="480" src={media}></iframe>
+			<iframe width="854" height="480" src={link}></iframe>
 		</Box>
 	);
 
