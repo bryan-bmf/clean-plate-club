@@ -139,3 +139,37 @@ def getGoogleBook(q):
     cover_image = book['imageLinks']['thumbnail']
     author =  book['authors'][0]
     return {"title": title, "cover_image": cover_image, "author": author}
+
+# get filters
+def get_filter_data():
+    print('get filter data')
+    try:
+        res = 'ok'
+            
+        query = "select key, value from clean_plate_club.config where key = 'cuisine' or key = 'protein' or key = 'cookingType'"
+
+        conn = db_connect()
+        cur = conn.cursor()
+        cur.execute(query)
+        filters = cur.fetchall()
+        print(filters)
+        
+    except (Exception, psycopg2.DatabaseError) as error: 
+        res = error
+        print('EXCEPTION', error)
+                
+    finally:
+        cur.close()
+        conn.close()
+        print("PostgreSQL connection is closed")
+        
+        # send error code when there's an exception
+        if(res != 'ok'):
+            response = Response(
+                str(res),
+                status = 503
+            )
+            return response
+            
+        return filters
+  

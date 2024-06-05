@@ -24,6 +24,13 @@ def get_recipes():
     res = get_edit_recipe('all')
     return res
 
+# get filter data
+@app.route("/get_filters")
+def get_filters():
+    print('get filters')
+    res = get_filter_data()
+    return res
+
 # get recipe to edit
 @app.route("/edit")
 def edit_recipe():

@@ -6,18 +6,16 @@ import {
 	HStack,
 	Heading,
 	Image,
-	SimpleGrid
+	SimpleGrid,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import sarten from "../assets/sarten.gif";
-import data from "../data";
 import RecipeCard from "./RecipeCard";
 
 const Recipes = () => {
-	const filterData: any = data.filterData;
-
 	const [recipes, setRecipes] = useState<Array<any>>();
+	const [filterData, setFilterData] = useState<Array<any>>();
 	const [filteredRecipes, setFilteredRecipes] = useState<Array<any>>();
 	const [cuisine, setCuisine] = useState("");
 	const [protein, setProtein] = useState("");
@@ -49,19 +47,36 @@ const Recipes = () => {
 		setLoading(true);
 		const resp = await fetch("http://127.0.0.1:5000/get_recipes");
 		const respData = await resp.json();
-		console.log(resp);
+
 		setRecipes(respData[0][0]);
 		setFilteredRecipes(respData[0][0]);
-		
-		setTimeout(() => {setLoading(false)}, 500);
+
+		setTimeout(() => {
+			setLoading(false);
+		}, 500);
 	};
 
+	const fetchFilterData = async () => {
+		setLoading(true);
+		const resp = await fetch("http://127.0.0.1:5000/get_filters");
+		const respData = await resp.json();
+
+		setFilterData(respData);
+
+		setTimeout(() => {
+			setLoading(false);
+		}, 500);
+	};
+
+	// handle filters
 	useEffect(() => {
 		handleRecipeFilter();
 	}, [cuisine, protein, cookingType]);
 
+	// initial fetch
 	useEffect(() => {
 		fetchData();
+		fetchFilterData();
 	}, []);
 
 	return (
@@ -86,11 +101,12 @@ const Recipes = () => {
 							<option id="cuisine" value="">
 								Cuisine
 							</option>
-							{filterData.cuisine.map((cuisine: string) => (
-								<option id="cuisine" value={cuisine} key={uuid()}>
-									{cuisine}
-								</option>
-							))}
+							{filterData &&
+								filterData[1][1].split(",").map((cuisine: string) => (
+									<option id="cuisine" value={cuisine} key={uuid()}>
+										{cuisine}
+									</option>
+								))}
 						</select>
 						<select
 							name="protein"
@@ -101,11 +117,12 @@ const Recipes = () => {
 							<option id="protein" value="">
 								Protein
 							</option>
-							{filterData.protein.map((protein: string) => (
-								<option id="protein" value={protein} key={uuid()}>
-									{protein}
-								</option>
-							))}
+							{filterData &&
+								filterData[0][1].split(",").map((protein: string) => (
+									<option id="protein" value={protein} key={uuid()}>
+										{protein}
+									</option>
+								))}
 						</select>
 						<select
 							name="cookingType"
@@ -116,15 +133,18 @@ const Recipes = () => {
 							<option id="cookingType" value="">
 								Cooking Type
 							</option>
-							{filterData.cookingType.map((cookingType: string) => (
-								<option
-									id="cookingType"
-									value={cookingType}
-									key={uuid()}
-								>
-									{cookingType}
-								</option>
-							))}
+							{filterData &&
+								filterData[2][1]
+									.split(",")
+									.map((cookingType: string) => (
+										<option
+											id="cookingType"
+											value={cookingType}
+											key={uuid()}
+										>
+											{cookingType}
+										</option>
+									))}
 						</select>
 					</HStack>
 					{/* RECIPES */}
