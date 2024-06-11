@@ -13,6 +13,7 @@ CORS(app)
 def create_recipe():
     print('create new recipe')
     req_data = request.get_json()
+    print(req_data)
     res = create_update_recipe(req_data, 'insert')
     return res
 
@@ -21,6 +22,13 @@ def create_recipe():
 def get_recipes():
     print('get recipes')
     res = get_edit_recipe('all')
+    return res
+
+# get filter data
+@app.route("/get_filters")
+def get_filters():
+    print('get filters')
+    res = get_filter_data()
     return res
 
 # get recipe to edit
@@ -40,4 +48,4 @@ def update_recipe():
     return res
 
 if __name__ == '__main__': 
-    app.run(debug=True)
+    app.run()

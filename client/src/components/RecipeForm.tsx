@@ -1,208 +1,301 @@
 import {
-    Button,
-    Container,
-    FormControl,
-    FormLabel,
-    HStack,
-    Input,
-    Radio,
-    RadioGroup,
-    Select,
+	Button,
+	Center,
+	FormControl,
+	FormLabel,
+	HStack,
+	Heading,
+	Image,
+	Input,
+	Radio,
+	RadioGroup,
+	Select,
+	VStack,
+	useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+import sarten from "../assets/sarten.gif";
 import data from "../data";
 import { AnyObject } from "../types";
 
 const RecipeForm = () => {
 	const [formData, setFormData] = useState<AnyObject>({
-		title: "",
+		name: "",
 		cuisine: "",
 		time: "",
 		protein: "",
-		cookingType: "",
-		sourceType: "",
-		source: "",
+		cooking_type: "",
+		source_type: "",
+		page: 0,
 		image: "",
-		pageNumber: 0,
+		source: "",
 	});
-	const [book, setBook] = useState<AnyObject>({
-		bookTitle: "",
-		bookImage: "",
-		bookAuthor: "",
-	});
+	const [loading, setLoading] = useState<boolean>(false);
+	const [cuisine, setCuisine] = useState<string>();
+	const [protein, setProtein] = useState<string>();
+	const [cooking_type, setCookingType] = useState<string>();
+	const toast = useToast();
 
 	const handleFormData = (e: any) => {
 		// radio button doesn't bring back an event
 		if (e === "link" || e === "youtube" || e === "book") {
-			setFormData({ ...formData, sourceType: e });
+			setFormData({ ...formData, source_type: e });
 		} else setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const fetchBook = async () => {
-		const url = "https://www.googleapis.com/books/v1/volumes";
-		const resp = await fetch(
-			url +
-				"?key=" +
-				process.env.REACT_APP_GOOGLE_API_KEY +
-				"&q=" +
-				formData.source
-		);
-		const respData = await resp.json();
-		const bookInfo = respData.items[0].volumeInfo;
-		setBook({
-			bookTitle: bookInfo.title,
-			bookImage: bookInfo.imageLinks.thumbnail,
-			bookAuthor: bookInfo.authors[0],
+	const createRecipe = async (recipe: AnyObject) => {
+		setLoading(true);
+
+		const resp = await fetch("http://127.0.0.1:5000/create", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(recipe),
+		});
+
+		let msg = "";
+		if (resp.ok) {
+			msg = "Success! Recipe added.";
+			toastMsg(msg);
+			setTimeout(() => window.location.reload(), 1000);
+		} else {
+			msg = "Error! Something went wrong.";
+			toastMsg(msg);
+			setLoading(false);
+			return;
+		}
+	};
+
+	const toastMsg = (msg: string) => {
+		return toast({
+			title: msg,
+			position: "top",
+			status: msg.charAt(0) === "S" ? "success" : "error",
+			isClosable: true,
 		});
 	};
 
+	const handleSubmit = () => {
+		const recipe = formatForm();
+		createRecipe(recipe);
+	};
+
+	// format form data for backend
+	const formatForm = () => {
+		let temp = { ...formData };
+
+		if (formData.source_type === "link")
+			temp.source = { link: temp.source, image: temp.image };
+		else if (formData.source_type === "youtube") {
+			let ytId = temp.source.split("=")[1];
+			temp.source = {
+				link: temp.source,
+				image: "https://i.ytimg.com/vi/" + ytId + "/sddefault.jpg",
+			};
+		}
+
+		delete temp.image;
+
+		return { ...temp, id: uuid() };
+	};
+
+	const fetchFilterData = async () => {
+		const resp = await fetch("http://127.0.0.1:5000/get_filters");
+		const respData = await resp.json();
+
+		// use seed data if db is not connected
+		if (respData[0][0] === null) {
+			setCuisine(data.filterData[0][1]);
+			setProtein(data.filterData[1][1]);
+			setCookingType(data.filterData[2][1]);
+
+		} else {
+			for (let i = 0; i < respData.length; i++) {
+				if (respData[i][0] === "cuisine") {
+					setCuisine(respData[i][1]);
+				} else if (respData[i][0] === "protein") {
+					setProtein(respData[i][1]);
+				}
+				// cooking type
+				else {
+					setCookingType(respData[i][1]);
+				}
+			}
+		}
+	};
+
+	// initial fetch
+	useEffect(() => {
+		fetchFilterData();
+	}, []);
+
 	return (
-		<Container maxW="xl" sx={sx.container}>
-			<FormControl>
-				<FormLabel>Recipe Name</FormLabel>
-				<Input
-					name="title"
-					sx={sx.field}
-					type="text"
-					value={formData.title}
-					onChange={handleFormData}
+		<Center>
+			{loading ? (
+				<Image
+					boxSize="500px"
+					src={sarten}
+					role="img"
+					objectFit="contain"
 				/>
-
-				<FormLabel>Cuisine</FormLabel>
-				<Select
-					name="cuisine"
-					sx={sx.field}
-					placeholder="Select a cuisine"
-					value={formData.cuisine}
-					onChange={handleFormData}
-				>
-					{data.filterData.cuisine.map((cuisine: string) => (
-						<option key={uuid()} value={cuisine}>
-							{cuisine}
-						</option>
-					))}
-				</Select>
-
-				<FormLabel>Time to cook</FormLabel>
-				<Input
-					name="time"
-					sx={sx.field}
-					type="text"
-					value={formData.time}
-					onChange={handleFormData}
-				/>
-
-				<FormLabel>Protein</FormLabel>
-				<Select
-					name="protein"
-					sx={sx.field}
-					placeholder="Select a protein"
-					value={formData.protein}
-					onChange={handleFormData}
-				>
-					{data.filterData.protein.map((protein: string) => (
-						<option key={uuid()} value={protein}>
-							{protein}
-						</option>
-					))}
-				</Select>
-
-				<FormLabel>Cooking Type</FormLabel>
-				<Select
-					name="cookingType"
-					sx={sx.field}
-					placeholder="Select a cooking type"
-					value={formData.cookingType}
-					onChange={handleFormData}
-				>
-					{data.filterData.cookingType.map((type: string) => (
-						<option key={uuid()} value={type}>
-							{type}
-						</option>
-					))}
-				</Select>
-
-				<FormLabel>Source Type</FormLabel>
-				<RadioGroup
-					name="sourceType"
-					sx={sx.radio}
-					value={formData.sourceType}
-					onChange={handleFormData}
-				>
-					<HStack spacing="12px">
-						<Radio value="link">Link</Radio>
-						<Radio value="youtube">YouTube</Radio>
-						<Radio value="book">Book</Radio>
-					</HStack>
-				</RadioGroup>
-				{/* Only show label for YT and book types */}
-				{formData.sourceType !== "link" &&
-				formData.sourceType.length > 0 ? (
-					<FormLabel>
-						{formData.sourceType === "youtube" ? "Youtube Link" : "Title"}
-					</FormLabel>
-				) : null}
-				<Input
-					name="source"
-					sx={sx.field}
-					type="url"
-					value={formData.source}
-					disabled={formData.sourceType.length === 0}
-					onChange={handleFormData}
-				/>
-				{/* Only show if it's a book */}
-				{formData.sourceType === "book" && (
-					<>
-						<FormLabel>Page Number</FormLabel>
+			) : (
+				<VStack sx={sx.form}>
+					<Heading>Add new recipe</Heading>
+					<FormControl>
+						<FormLabel sx={sx.label}>Recipe Name</FormLabel>
 						<Input
-							name="pageNumber"
-							sx={sx.field}
-							type="number"
-							value={formData.pageNumber}
+							name="name"
+							type="text"
+							value={formData.name}
 							onChange={handleFormData}
-							w="100px"
 						/>
-					</>
-				)}
 
-				{/* Only show if it's a link. An API call will populate the others */}
-				{formData.sourceType === "link" && (
-					<>
-						<FormLabel>Image</FormLabel>
+						<FormLabel sx={sx.label}>Cuisine</FormLabel>
+						<Select
+							name="cuisine"
+							placeholder="Select a cuisine"
+							value={formData.cuisine}
+							onChange={handleFormData}
+						>
+							{cuisine &&
+								cuisine.split(",").map((cuisine: string) => (
+									<option id="cuisine" value={cuisine} key={uuid()}>
+										{cuisine}
+									</option>
+								))}
+						</Select>
+
+						<FormLabel sx={sx.label}>Time to cook</FormLabel>
 						<Input
-							name="image"
-							sx={sx.field}
+							name="time"
+							type="text"
+							value={formData.time}
+							onChange={handleFormData}
+						/>
+
+						<FormLabel sx={sx.label}>Protein</FormLabel>
+						<Select
+							name="protein"
+							placeholder="Select a protein"
+							value={formData.protein}
+							onChange={handleFormData}
+						>
+							{protein &&
+								protein.split(",").map((protein: string) => (
+									<option id="protein" value={protein} key={uuid()}>
+										{protein}
+									</option>
+								))}
+						</Select>
+
+						<FormLabel sx={sx.label}>Cooking Type</FormLabel>
+						<Select
+							name="cooking_type"
+							placeholder="Select a cooking type"
+							value={formData.cooking_type}
+							onChange={handleFormData}
+						>
+							{cooking_type &&
+								cooking_type.split(",").map((cookingType: string) => (
+									<option
+										id="cookingType"
+										value={cookingType}
+										key={uuid()}
+									>
+										{cookingType}
+									</option>
+								))}
+						</Select>
+
+						<FormLabel sx={sx.label}>Source Type</FormLabel>
+						<RadioGroup
+							name="source_type"
+							sx={sx.radio}
+							value={formData.source_type}
+							onChange={handleFormData}
+						>
+							<HStack spacing="12px">
+								<Radio value="link">Link</Radio>
+								<Radio value="youtube">YouTube</Radio>
+								<Radio value="book">Book</Radio>
+							</HStack>
+						</RadioGroup>
+						{/* Only show label for YT and book types */}
+						{formData.source_type !== "link" &&
+						formData.source_type.length > 0 ? (
+							<FormLabel sx={sx.label}>
+								{formData.source_type === "youtube"
+									? "Youtube Link"
+									: "Title"}
+							</FormLabel>
+						) : null}
+						<Input
+							name="source"
 							type="url"
-							value={formData.image}
+							value={formData.source}
+							disabled={formData.source_type.length === 0}
 							onChange={handleFormData}
 						/>
-					</>
-				)}
+						{/* Only show if it's a book */}
+						{formData.source_type === "book" && (
+							<>
+								<FormLabel sx={sx.label}>Page Number</FormLabel>
+								<Input
+									name="page"
+									type="number"
+									value={formData.page}
+									onChange={handleFormData}
+									w="100px"
+								/>
+							</>
+						)}
 
-				<HStack justify="center" sx={sx.buttons}>
-					<Button colorScheme="red">Cancel</Button>
-					<Button colorScheme="blue" onClick={fetchBook}>
-						Submit
-					</Button>
-				</HStack>
-			</FormControl>
-		</Container>
+						{/* Only show if it's a link. An API call will populate the others */}
+						{formData.source_type === "link" && (
+							<>
+								<FormLabel sx={sx.label}>Image</FormLabel>
+								<Input
+									name="image"
+									type="url"
+									value={formData.image}
+									onChange={handleFormData}
+								/>
+							</>
+						)}
+
+						<HStack justify="center" sx={sx.buttons}>
+							<Button colorScheme="red">Cancel</Button>
+							<Button colorScheme="blue" onClick={handleSubmit}>
+								Submit
+							</Button>
+						</HStack>
+					</FormControl>
+				</VStack>
+			)}
+		</Center>
 	);
 };
 
 const sx = {
-	field: {
-		mb: 4,
-	},
-	container: {
-		padding: 4,
+	label: {
+		mt: 4,
 	},
 	buttons: {
-		mt: 4,
+		p: 4,
 	},
 	radio: {
 		mb: 2,
+	},
+	form: {
+		width: "40%",
+	},
+	loading: {
+		background: "rgba(0, 0, 0, 0.4)",
+		width: "100%",
+		height: "100%",
+		position: "absolute",
 	},
 };
 

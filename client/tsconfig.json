@@ -20,9 +20,8 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "**/*.ts", "webpack.config.js"],
+  "include": ["src", "**/*.ts"],
   "typeRoots": [
-    "./src/types",
     "./node_modules/@types"
   ]
 }
