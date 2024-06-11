@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import sarten from "../assets/sarten.gif";
-import data from "../data";
+import seed from "../seed";
 import { AnyObject } from "../types";
 import RecipeCard from "./RecipeCard";
 
@@ -47,21 +47,25 @@ const Recipes = () => {
 
 	const fetchData = async () => {
 		setLoading(true);
-		const resp = await fetch("http://127.0.0.1:5000/get_recipes");
-		const respData = await resp.json();
-		const sortedData = respData[0][0].sort(
-			(a: AnyObject, b: AnyObject) => a.name > b.name
-		);
 
-		// use seed data if db is not connected
-		if (respData[0][0] === null) {
-			setRecipes(data.data);
-			setFilteredRecipes(data.data);
-		} else {
-			setRecipes(sortedData);
-			setFilteredRecipes(sortedData);
+		try {
+			const resp = await fetch("http://127.0.0.1:5000/get_recipes");
+			const respData = await resp.json();
+			const sortedData = respData[0][0].sort(
+				(a: AnyObject, b: AnyObject) => a.name > b.name
+			);
+
+			// use seed data if empty db
+			if (respData[0][0] === null) {
+				throw new Error("Empty DB");
+			} else {
+				setRecipes(sortedData);
+				setFilteredRecipes(sortedData);
+			}
+		} catch (error) {
+			setRecipes(seed.data);
+			setFilteredRecipes(seed.data);
 		}
-
 		setTimeout(() => {
 			setLoading(false);
 		}, 2000);
@@ -69,25 +73,34 @@ const Recipes = () => {
 
 	const fetchFilterData = async () => {
 		setLoading(true);
-		const resp = await fetch("http://127.0.0.1:5000/get_filters");
-		const respData = await resp.json();
 
-		// organize filters in the correct positions
-		let temp: any = [];
-		for (let i = 0; i < respData.length; i++) {
-			if (respData[i][0] === "cuisine") {
-				temp.splice(0, 0, respData[i][1]);
-			} else if (respData[i][0] === "protein") {
-				temp.splice(1, 0, respData[i][1]);
+		try {
+			const resp = await fetch("http://127.0.0.1:5000/get_filters");
+			const respData = await resp.json();
+
+			// organize filters in the correct positions
+			let temp: any = [];
+			for (let i = 0; i < respData.length; i++) {
+				if (respData[i][0] === "cuisine") {
+					temp.splice(0, 0, respData[i][1]);
+				} else if (respData[i][0] === "protein") {
+					temp.splice(1, 0, respData[i][1]);
+				}
+				// cooking type
+				else {
+					temp.splice(2, 0, respData[i][1]);
+				}
 			}
-			// cooking type
-			else {
-				temp.splice(2, 0, respData[i][1]);
-			}
+
+			setFilterData(temp);
+		} catch (error) {
+			// use seed data if no db
+			let temp = [];
+			temp.push(seed.filterData[0][1]);
+			temp.push(seed.filterData[1][1]);
+			temp.push(seed.filterData[2][1]);
+			setFilterData(temp);
 		}
-
-		setFilterData(temp);
-
 		setTimeout(() => {
 			setLoading(false);
 		}, 2000);
@@ -136,7 +149,7 @@ const Recipes = () => {
 						<select
 							name="protein"
 							style={sx.filters}
-							onChange={(e: any) => setProtein(e.target.value)}
+							onChange={(e: any) => console.log(e.target.value)}
 							value={protein}
 						>
 							<option id="protein" value="">

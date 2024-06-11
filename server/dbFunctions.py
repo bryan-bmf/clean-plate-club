@@ -108,7 +108,8 @@ def get_edit_recipe(id):
         cur = conn.cursor()
         cur.execute(query)
         recipes = cur.fetchall()
-        print(recipes)
+        # print(recipes)
+        print("Recipes returned")
         
     except (Exception, psycopg2.DatabaseError) as error: 
         res = error
@@ -152,7 +153,8 @@ def get_filter_data():
         cur = conn.cursor()
         cur.execute(query)
         filters = cur.fetchall()
-        print(filters)
+        # print(filters)
+        print("Filters returned")
         
     except (Exception, psycopg2.DatabaseError) as error: 
         res = error
