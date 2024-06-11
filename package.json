@@ -1,0 +1,27 @@
+{
+  "name": "clean-plate-club",
+  "version": "1.0.0",
+  "description": "a collection of our favorite recipes",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "server": "cd server && . .venv/bin/activate && flask run",
+    "client": "cd client && npm start",
+    "install-client": "cd client && npm install",
+    "install-all": "concurrently --kill-others-on-fail \"npm install\" \"npm run install-client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryan-bmf/clean-plate-club.git"
+  },
+  "author": "bryan-bmf",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bryan-bmf/clean-plate-club/issues"
+  },
+  "homepage": "https://github.com/bryan-bmf/clean-plate-club#readme",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
