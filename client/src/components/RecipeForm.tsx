@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import sarten from "../assets/sarten.gif";
-import data from "../data";
+import data from "../seed";
 import { AnyObject } from "../types";
 
 const RecipeForm = () => {
@@ -102,27 +102,30 @@ const RecipeForm = () => {
 	};
 
 	const fetchFilterData = async () => {
-		const resp = await fetch("http://127.0.0.1:5000/get_filters");
-		const respData = await resp.json();
+		try {
+			const resp = await fetch("http://127.0.0.1:5000/get_filters");
+			const respData = await resp.json();
 
-		// use seed data if db is not connected
-		if (respData[0][0] === null) {
-			setCuisine(data.filterData[0][1]);
-			setProtein(data.filterData[1][1]);
-			setCookingType(data.filterData[2][1]);
-
-		} else {
-			for (let i = 0; i < respData.length; i++) {
-				if (respData[i][0] === "cuisine") {
-					setCuisine(respData[i][1]);
-				} else if (respData[i][0] === "protein") {
-					setProtein(respData[i][1]);
-				}
-				// cooking type
-				else {
-					setCookingType(respData[i][1]);
+			// use seed data if empty db
+			if (respData[0][0] === null) {
+				setCuisine(data.filterData[0][1]);
+				setProtein(data.filterData[1][1]);
+				setCookingType(data.filterData[2][1]);
+			} else {
+				for (let i = 0; i < respData.length; i++) {
+					if (respData[i][0] === "cuisine") {
+						setCuisine(respData[i][1]);
+					} else if (respData[i][0] === "protein") {
+						setProtein(respData[i][1]);
+					}
+					// cooking type
+					else {
+						setCookingType(respData[i][1]);
+					}
 				}
 			}
+		} catch (error) {
+			alert('Error with DB. Please try again.')
 		}
 	};
 
