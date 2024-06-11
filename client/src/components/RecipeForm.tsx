@@ -13,7 +13,7 @@ import {
 	VStack,
 	useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import sarten from "../assets/sarten.gif";
 import data from "../data";
@@ -32,6 +32,9 @@ const RecipeForm = () => {
 		source: "",
 	});
 	const [loading, setLoading] = useState<boolean>(false);
+	const [cuisine, setCuisine] = useState<string>();
+	const [protein, setProtein] = useState<string>();
+	const [cooking_type, setCookingType] = useState<string>();
 	const toast = useToast();
 
 	const handleFormData = (e: any) => {
@@ -52,16 +55,15 @@ const RecipeForm = () => {
 			body: JSON.stringify(recipe),
 		});
 
-		setLoading(false);
-
 		let msg = "";
 		if (resp.ok) {
 			msg = "Success! Recipe added.";
 			toastMsg(msg);
-			setTimeout(() => window.location.reload(), 2000);
+			setTimeout(() => window.location.reload(), 1000);
 		} else {
 			msg = "Error! Something went wrong.";
 			toastMsg(msg);
+			setLoading(false);
 			return;
 		}
 	};
@@ -90,7 +92,7 @@ const RecipeForm = () => {
 			let ytId = temp.source.split("=")[1];
 			temp.source = {
 				link: temp.source,
-				image: "https://i3.ytimg.com/vi/" + ytId + "/0.jpg",
+				image: "https://i.ytimg.com/vi/" + ytId + "/sddefault.jpg",
 			};
 		}
 
@@ -98,6 +100,36 @@ const RecipeForm = () => {
 
 		return { ...temp, id: uuid() };
 	};
+
+	const fetchFilterData = async () => {
+		const resp = await fetch("http://127.0.0.1:5000/get_filters");
+		const respData = await resp.json();
+
+		// use seed data if db is not connected
+		if (respData[0][0] === null) {
+			setCuisine(data.filterData[0][1]);
+			setProtein(data.filterData[1][1]);
+			setCookingType(data.filterData[2][1]);
+
+		} else {
+			for (let i = 0; i < respData.length; i++) {
+				if (respData[i][0] === "cuisine") {
+					setCuisine(respData[i][1]);
+				} else if (respData[i][0] === "protein") {
+					setProtein(respData[i][1]);
+				}
+				// cooking type
+				else {
+					setCookingType(respData[i][1]);
+				}
+			}
+		}
+	};
+
+	// initial fetch
+	useEffect(() => {
+		fetchFilterData();
+	}, []);
 
 	return (
 		<Center>
@@ -127,11 +159,12 @@ const RecipeForm = () => {
 							value={formData.cuisine}
 							onChange={handleFormData}
 						>
-							{data.filterData.cuisine.map((cuisine: string) => (
-								<option key={uuid()} value={cuisine}>
-									{cuisine}
-								</option>
-							))}
+							{cuisine &&
+								cuisine.split(",").map((cuisine: string) => (
+									<option id="cuisine" value={cuisine} key={uuid()}>
+										{cuisine}
+									</option>
+								))}
 						</Select>
 
 						<FormLabel sx={sx.label}>Time to cook</FormLabel>
@@ -149,11 +182,12 @@ const RecipeForm = () => {
 							value={formData.protein}
 							onChange={handleFormData}
 						>
-							{data.filterData.protein.map((protein: string) => (
-								<option key={uuid()} value={protein}>
-									{protein}
-								</option>
-							))}
+							{protein &&
+								protein.split(",").map((protein: string) => (
+									<option id="protein" value={protein} key={uuid()}>
+										{protein}
+									</option>
+								))}
 						</Select>
 
 						<FormLabel sx={sx.label}>Cooking Type</FormLabel>
@@ -163,11 +197,16 @@ const RecipeForm = () => {
 							value={formData.cooking_type}
 							onChange={handleFormData}
 						>
-							{data.filterData.cookingType.map((type: string) => (
-								<option key={uuid()} value={type}>
-									{type}
-								</option>
-							))}
+							{cooking_type &&
+								cooking_type.split(",").map((cookingType: string) => (
+									<option
+										id="cookingType"
+										value={cookingType}
+										key={uuid()}
+									>
+										{cookingType}
+									</option>
+								))}
 						</Select>
 
 						<FormLabel sx={sx.label}>Source Type</FormLabel>

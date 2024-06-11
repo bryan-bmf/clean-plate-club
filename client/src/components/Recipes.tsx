@@ -11,6 +11,8 @@ import {
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import sarten from "../assets/sarten.gif";
+import data from "../data";
+import { AnyObject } from "../types";
 import RecipeCard from "./RecipeCard";
 
 const Recipes = () => {
@@ -47,13 +49,22 @@ const Recipes = () => {
 		setLoading(true);
 		const resp = await fetch("http://127.0.0.1:5000/get_recipes");
 		const respData = await resp.json();
+		const sortedData = respData[0][0].sort(
+			(a: AnyObject, b: AnyObject) => a.name > b.name
+		);
 
-		setRecipes(respData[0][0]);
-		setFilteredRecipes(respData[0][0]);
+		// use seed data if db is not connected
+		if (respData[0][0] === null) {
+			setRecipes(data.data);
+			setFilteredRecipes(data.data);
+		} else {
+			setRecipes(sortedData);
+			setFilteredRecipes(sortedData);
+		}
 
 		setTimeout(() => {
 			setLoading(false);
-		}, 500);
+		}, 2000);
 	};
 
 	const fetchFilterData = async () => {
@@ -61,11 +72,25 @@ const Recipes = () => {
 		const resp = await fetch("http://127.0.0.1:5000/get_filters");
 		const respData = await resp.json();
 
-		setFilterData(respData);
+		// organize filters in the correct positions
+		let temp: any = [];
+		for (let i = 0; i < respData.length; i++) {
+			if (respData[i][0] === "cuisine") {
+				temp.splice(0, 0, respData[i][1]);
+			} else if (respData[i][0] === "protein") {
+				temp.splice(1, 0, respData[i][1]);
+			}
+			// cooking type
+			else {
+				temp.splice(2, 0, respData[i][1]);
+			}
+		}
+
+		setFilterData(temp);
 
 		setTimeout(() => {
 			setLoading(false);
-		}, 500);
+		}, 2000);
 	};
 
 	// handle filters
@@ -102,7 +127,7 @@ const Recipes = () => {
 								Cuisine
 							</option>
 							{filterData &&
-								filterData[1][1].split(",").map((cuisine: string) => (
+								filterData[0].split(",").map((cuisine: string) => (
 									<option id="cuisine" value={cuisine} key={uuid()}>
 										{cuisine}
 									</option>
@@ -118,7 +143,7 @@ const Recipes = () => {
 								Protein
 							</option>
 							{filterData &&
-								filterData[0][1].split(",").map((protein: string) => (
+								filterData[1].split(",").map((protein: string) => (
 									<option id="protein" value={protein} key={uuid()}>
 										{protein}
 									</option>
@@ -134,17 +159,15 @@ const Recipes = () => {
 								Cooking Type
 							</option>
 							{filterData &&
-								filterData[2][1]
-									.split(",")
-									.map((cookingType: string) => (
-										<option
-											id="cookingType"
-											value={cookingType}
-											key={uuid()}
-										>
-											{cookingType}
-										</option>
-									))}
+								filterData[2].split(",").map((cookingType: string) => (
+									<option
+										id="cookingType"
+										value={cookingType}
+										key={uuid()}
+									>
+										{cookingType}
+									</option>
+								))}
 						</select>
 					</HStack>
 					{/* RECIPES */}

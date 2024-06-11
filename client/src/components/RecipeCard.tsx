@@ -16,10 +16,9 @@ import {
 	ModalFooter,
 	ModalHeader,
 	ModalOverlay,
-	Spacer,
 	Stack,
 	Text,
-	useDisclosure,
+	useDisclosure
 } from "@chakra-ui/react";
 import { v4 as uuid } from "uuid";
 
@@ -61,9 +60,8 @@ const RecipeCard = (props: any) => {
 			<ModalBody>
 				<Flex>
 					<Image src={cover_image} />
-					<Spacer />
-					<Box ml="5px">
-						<Heading>{title}</Heading>
+					<Box ml="5px" p="4">
+						<Heading size="lg">{title}</Heading>
 						<Text fontSize="xl">{author}</Text>
 						<Text fontSize="md">Page {page}</Text>
 					</Box>
@@ -86,11 +84,12 @@ const RecipeCard = (props: any) => {
 	return (
 		<>
 			{/* CARD */}
-			<Card maxW="250px" maxH="lg">
+			<Card maxW="250px" maxH="lg" minH="lg">
 				<CardBody>
-					<Image src={image} borderRadius="lg" boxSize="200px" />
+				{image && <Image src={image} borderRadius="lg" boxSize="200px" />}
+				{cover_image && <Image src={cover_image} borderRadius="lg" boxSize="200px" />}					
 					<Stack mt="6" spacing="3">
-						<Heading size="md">{name}</Heading>
+						<Heading size="md" noOfLines={2}>{name}</Heading>
 						<Text>Cuisine: {cuisine}</Text>
 						<Text>Time: {time}</Text>
 						<Stack direction="row" spacing="3" justify="center">
