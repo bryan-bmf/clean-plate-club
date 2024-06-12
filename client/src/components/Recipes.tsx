@@ -149,7 +149,7 @@ const Recipes = () => {
 						<select
 							name="protein"
 							style={sx.filters}
-							onChange={(e: any) => console.log(e.target.value)}
+							onChange={(e: any) => setProtein(e.target.value)}
 							value={protein}
 						>
 							<option id="protein" value="">
