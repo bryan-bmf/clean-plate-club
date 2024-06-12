@@ -39,3 +39,10 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+	font-family: Motterdam;
+	src: url("/src/assets/Motterdam.ttf");
+	font-weight: normal;
+	font-style: normal;
+}
