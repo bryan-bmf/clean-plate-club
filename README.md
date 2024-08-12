@@ -12,3 +12,11 @@ Project is created with:
 * ChakraUI
 * Flask
 * PostgreSQL
+
+## Setup
+To run this project, install it locally using seed data:
+
+```
+$ npm run install-client
+$ npm run client
+```

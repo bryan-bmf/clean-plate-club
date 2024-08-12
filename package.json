@@ -6,7 +6,7 @@
   "scripts": {
     "test": "test",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "server": "cd server && . .venv/bin/activate && flask run",
+    "server": "cd server && source .venv/bin/activate && flask run",
     "client": "cd client && npm start",
     "install-client": "cd client && npm install",
     "install-all": "concurrently --kill-others-on-fail \"npm install\" \"npm run install-client\""
