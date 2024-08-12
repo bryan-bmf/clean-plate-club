@@ -406,7 +406,7 @@ const data = [
 const filterData = [
 	["cuisine","African,American,Asian,Criollo,French,German,Indian,Italian,Mediterranean,Mexican,Southern,Spanish"],
 	["protein","Beef,Chicken,Pork,Seafood,Turkey,Veggie"],
-	["cookingType","AirFryer,Oven,Stew,Stir-Fry,Stovetop"],
+	["cookingType","Air Fryer,Oven,Stew,Stir-Fry,Stovetop"],
 ];
 
 export default { data, filterData };
