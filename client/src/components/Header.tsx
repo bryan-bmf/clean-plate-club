@@ -4,7 +4,7 @@ import "../App.css";
 const Header = () => {
 	return (
 		<Center sx={sx.headerParent}>
-			<Heading as="h1" size="4xl" noOfLines={1} sx={sx.header}>
+			<Heading as="h1" size={["2xl", "3xl", "4xl"]} noOfLines={1} sx={sx.header}>
 				Clean Plate Club
 			</Heading>
 		</Center>
